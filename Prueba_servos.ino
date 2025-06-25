@@ -1,13 +1,13 @@
 #include <Servo.h>
 
-Servo servo1;  // Primer servomotor 
-Servo servo2;  // Segundo servomotor
-Servo servo3;  // Tercer servomotor
+Servo servo1;  
+Servo servo2; 
+Servo servo3;  
 
 void setup() {
-  servo1.attach(9);    // Conecta servo1 al pin digital 9
-  servo2.attach(10);   // Conecta servo2 al pin digital 10
-  servo3.attach(11);   // Conecta servo3 al pin digital 11
+  servo1.attach(9);    // servo1 al pin digital 9
+  servo2.attach(10);   // servo2 al pin digital 10
+  servo3.attach(11);   // servo3 al pin digital 11
 }
 
 void loop() {
