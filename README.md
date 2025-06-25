@@ -51,7 +51,7 @@ CONEXIONES DEL HARDWARE
 - Servo 2 (hombro): Pin 10
 - Servo 3 (codo): Pin 11
 - Servo 4 (muñeca o pinza): Pin 12
-- GND y VCC de los servos conectados a fuente externa (recomendado).
+- GND y VCC de los servos conectados a fuente externa.
 - GND común entre Arduino y fuente externa.
 
 --------------------------
@@ -64,10 +64,6 @@ CÓMO USAR EL PROYECTO
 4. Mover los joysticks para controlar el brazo.
    - Joystick izquierdo: mueve base y hombro.
    - Joystick derecho: mueve codo y muñeca.
-
-IMPORTANTE:
-- Asegurate de que el puerto COM en el script Python coincida con el que usa tu Arduino.
-- Los servos no deben recibir mucha carga sin fuente externa o se reiniciará el Arduino.
 
 ---------------------
 VERSIONES FUTURAS
