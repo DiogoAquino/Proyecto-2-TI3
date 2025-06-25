@@ -1,26 +1,39 @@
-from pydualsense import *
-import serial
-import time
+#include <Servo.h>
 
-arduino = serial.Serial('COM3', 9600)
-time.sleep(2)
+Servo servo1;
+Servo servo2;
 
-ds = DualSense()
-ds.init()
+void setup() {
+  // Inicializar comunicación serial
+  Serial.begin(9600);
 
-print("Controlando servos con el joystick izquierdo...")
+  // Conectar los servos a los pines digitales
+  servo1.attach(9);   //servo en pin 9
+  servo2.attach(10);  //servo en pin 10
+}
 
-try:
-while True:
-x = ds.leftX
-y = ds.leftY
+void loop() {
+  // Revisar si hay datos disponibles desde el puerto serie
+  if (Serial.available()) {
+    // Leer la línea completa hasta el salto de línea
+    String input = Serial.readStringUntil('\n');
 
-    servo1 = int((x + 127) * 180 / 254)
-    servo2 = int((y + 127) * 180 / 254)
+    // Buscar la coma que separa los dos valores
+    int commaIndex = input.indexOf(',');
 
-    data = f"{servo1},{servo2}\n"
-    arduino.write(data.encode())
-    time.sleep(0.05)
-except KeyboardInterrupt:
-ds.close()
-arduino.close()
+    // Si se encontró la coma, procesar los datos
+    if (commaIndex > 0) {
+      // Separar y convertir a enteros los dos valores
+      int angle1 = input.substring(0, commaIndex).toInt();
+      int angle2 = input.substring(commaIndex + 1).toInt();
+
+      // Limitar los ángulos entre 0 y 180
+      angle1 = constrain(angle1, 0, 180);
+      angle2 = constrain(angle2, 0, 180);
+
+      // Mover los servos
+      servo1.write(angle1);
+      servo2.write(angle2);
+    }
+  }
+}
