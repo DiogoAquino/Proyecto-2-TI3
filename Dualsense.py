@@ -2,7 +2,7 @@ from pydualsense import *
 import serial
 import time
 
-arduino = serial.Serial('COM3', 9600)  # Cambiá COM3 si tu Arduino usa otro puerto
+arduino = serial.Serial('COM3', 9600)
 time.sleep(2)
 
 ds = DualSense()
