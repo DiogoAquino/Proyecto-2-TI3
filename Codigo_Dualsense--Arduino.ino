@@ -1,0 +1,95 @@
+#include <Servo.h>
+#include <Stepper.h>
+
+// --- Definición de Pines de Componentes ---
+const int PIN_SERVO_GARRA = 7;
+const int PIN_SERVO2 = 8;
+const int PIN_SERVO_MG995 = 9;
+
+// Pines para el driver ULN2003 del motor paso a paso (Stepper)
+const int STEPPER_IN1 = 10;
+const int STEPPER_IN2 = 11;
+const int STEPPER_IN3 = 12;
+const int STEPPER_IN4 = 13;
+
+// --- Creación de Objetos ---
+Servo servoGarra;
+Servo servo2;
+Servo servoMG995;
+
+// Definición del motor paso a paso (2048 pasos por revolución para 28BYJ-48 con driver ULN2003)
+Stepper myStepper(2048, STEPPER_IN1, STEPPER_IN3, STEPPER_IN2, STEPPER_IN4);
+
+// --- Variables de Posición y Estado ---
+// Las posiciones iniciales se establecen en 90 grados, el centro del rango de 0-180.
+int posGarra = 90;
+int posServo2 = 90;
+int posServoMG995 = 90;
+
+// --- Configuración (se ejecuta una vez al encender el Arduino) ---
+void setup() {
+  Serial.begin(115200);
+  while (!Serial);
+  Serial.println("Arduino listo para recibir comandos.");
+
+  // Adjuntar los servos a sus pines
+  servoGarra.attach(PIN_SERVO_GARRA);
+  servo2.attach(PIN_SERVO2);
+  servoMG995.attach(PIN_SERVO_MG995);
+
+  // Mover servos a sus posiciones iniciales
+  servoGarra.write(posGarra);
+  servo2.write(posServo2);
+  servoMG995.write(posServoMG995);
+
+  // Configurar la velocidad del motor paso a paso (RPM)
+  myStepper.setSpeed(15);
+}
+
+// --- Bucle Principal (se ejecuta repetidamente) ---
+void loop() {
+  serialEvent();
+}
+
+// --- Función para Procesar Datos Seriales ---
+void serialEvent() {
+  while (Serial.available()) {
+    char inChar = (char)Serial.read();
+    static String inputString = "";
+    static boolean stringComplete = false;
+
+    if (inChar == '\n') {
+      stringComplete = true;
+    } else {
+      inputString += inChar;
+    }
+
+    if (stringComplete) {
+      if (inputString.startsWith("G:")) { // Comando para la Garra
+        String valueString = inputString.substring(2);
+        posGarra = valueString.toInt();
+        // Ya no se limita aquí, el rango será el del servo (0-180)
+        servoGarra.write(posGarra);
+      } else if (inputString.startsWith("S2:")) { // Comando para Servo 2
+        String valueString = inputString.substring(3);
+        posServo2 = valueString.toInt();
+        // Ya no se limita aquí
+        servo2.write(posServo2);
+      } else if (inputString.startsWith("SP:")) { // Comando para el Stepper (pasos)
+        String valueString = inputString.substring(3);
+        int steps = valueString.toInt();
+        Serial.print("Recibido SP: ");
+        Serial.println(steps);
+        myStepper.step(steps);
+      } else if (inputString.startsWith("M9:")) { // Comando para el Servo MG995
+        String valueString = inputString.substring(3);
+        posServoMG995 = valueString.toInt();
+        // Ya no se limita aquí
+        servoMG995.write(posServoMG995);
+      }
+
+      inputString = "";
+      stringComplete = false;
+    }
+  }
+}
